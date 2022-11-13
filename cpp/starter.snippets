@@ -7,9 +7,36 @@ snippet cpp
 	#define dbr(...)
 	#define dbs(...)
 	#endif
+	#define ll long long
+	using namespace std;
+	using vl = vector<ll>;
 	
+	int main(){
+		${1:}
+	}
+
+snippet cppv
+	#ifdef LOCAL
+	#include <dbg.h>
+	#else
+	#include <bits/stdc++.h>
+	#define dbg(...)
+	#define dbr(...)
+	#define dbs(...)
+	#endif
 	#define ll long long 
 	using namespace std;
+	using vl = vector<ll>;
+
+	template <int D, typename T> struct Vec : public vector<Vec<D - 1, T>> {
+	template <typename... Args>
+	Vec(int n = 0, Args... args)
+		: vector<Vec<D - 1, T>>(n, Vec<D - 1, T>(args...)) {}
+	};
+	template <typename T> struct Vec<1, T> : public vector<T> {
+		Vec(int n = 0, const T &val = T()) : vector<T>(n, val) {}
+	};
+
 
 	int main(){
 		${1:}
@@ -24,9 +51,10 @@ snippet i128_cpp
 	#define dbr(...)
 	#define dbs(...)
 	#endif
-	
 	#define ll long long 
 	using namespace std;
+	using vl = vector<ll>;
+
 
 	__int128 read();
 	void print(__int128);
