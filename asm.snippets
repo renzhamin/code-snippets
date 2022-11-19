@@ -1,7 +1,131 @@
+snippet "print_str"
+	PRINT_STR MACRO str; [ DX,AH ]
+		LEA DX,str
+		MOV AH,9
+		INT 21H
+	ENDM
+
+
+snippet "copy_arr"
+	COPY_STR MACRO s1,s2; s2=s1, [ BL,SI ]
+		MOV SI,0
+		COPY_ITER:
+			MOV BL,s1[SI]
+			CMP BL,'$'
+			JE COPY_DONE
+			MOV s2[SI],BL
+			INC SI
+			JMP COPY_ITER
+		COPY_DONE:
+	ENDM 
+
+
 snippet "newline"
     MOV AH,2
     MOV DL,0DH
     INT 21H    
     MOV DL,0AH
     INT 21H
+
+
+snippet "rev_arr"
+	REVARR MACRO a1,a2,n; a2 = reverse(a1), n = len(a1), [ SI,DI ]
+    MOV SI,0
+    MOV CX,n
+
+    REVARR_ITER:
+    MOV DI, n
+    SUB DI,1
+    SUB DI,SI; DI = n-SI-1
+
+    MOV AL,a1[SI]
+    MOV a2[DI],AL
+    INC SI
+    LOOP REVARR_ITER
+	ENDM
+
+snippet "swap_var"
+	SWAP_VAR MACRO i,j; [ BL,BH ]
+    MOV BL,i
+    MOV BH,j
+    XCHG BL,BH
+    MOV i,BL
+    MOV j,BH
+	ENDM
+
+snippet "check_even"
+	CHECK_EVEN MACRO num,even; set even = (num%2), [AL,AH,BL,even]
+    XOR AX,AX
+    MOV even,0
+    MOV AL,num
+    MOV BL,2
+    DIV BL
+    CMP AH,0; AH = remainder
+    JNE EVEN_DONE
+    MOV even,1
+    EVEN_DONE:
+	ENDM
+
+snippet "input_array"
+	INPUT_ARR MACRO a,n; a[n] = input(), [AL,AH,CL,DX,SI]
+    MOV SI,0
+    MOV CL,n
+
+    INPUT_ARR_ITER:
+        MOV AH,1
+        INT 21H
+        SUB AL,'0'
+        MOV a[SI], AL
+        INC SI
+        PRINT_STR newline
+        LOOP INPUT_ARR_ITER
+	ENDM
+
+snippet "build_freq_array"
+	BUILD_FREQ MACRO arr,freq,n; freq[arr[i]]++
+    MOV SI,0
+    MOV CL,n
+    RESET_FREQ:
+        MOV freq[SI],0
+        INC SI
+        LOOP RESET_FREQ
+
+    MOV SI,0
+    MOV CL,n
+    CFREQ_ITER:
+        XOR AX,AX
+        MOV AL, arr[SI]
+        MOV DI,AX
+        INC freq[DI]
+        INC SI
+        LOOP CFREQ_ITER
+    
+	ENDM
+
+snippet "array_from_freq"
+	ARR_FROM_FREQ MACRO arr,freq,n; build arr from freq[n] array
+    MOV SI,0
+    MOV DI,0
+    MOV CL,n
+
+    AFREQ_ITER_FREQ:
+
+        MOV BL, freq[SI]
+        AFREQ_ITER_NUM:
+            CMP BL,0
+            JE AFREQ_ITER_NUM_DONE
+
+            XOR AX,AX
+            MOV AX,SI
+            MOV arr[DI], AL
+            INC DI
+            DEC BL
+            JMP AFREQ_ITER_NUM
+
+        AFREQ_ITER_NUM_DONE:
+            INC SI
+        LOOP AFREQ_ITER_FREQ
+
+    AFREQ_DONE:
+	ENDM
 
