@@ -1,5 +1,5 @@
 snippet "print_str"
-	PRINT_STR MACRO str; [ DX,AH ]
+	__PRINT_STR MACRO str; [ DX,AH ]
 		LEA DX,str
 		MOV AH,9
 		INT 21H
@@ -7,7 +7,7 @@ snippet "print_str"
 
 
 snippet "copy_arr"
-	COPY_STR MACRO s1,s2; s2=s1, [ BL,SI ]
+	__COPY_ARR MACRO s1,s2; s2=s1, [ BL,SI ]
 		MOV SI,0
 		COPY_ITER:
 			MOV BL,s1[SI]
@@ -29,7 +29,7 @@ snippet "newline"
 
 
 snippet "rev_arr"
-	REVARR MACRO a1,a2,n; a2 = reverse(a1), n = len(a1), [ SI,DI ]
+	__REVARR MACRO a1,a2,n; a2 = reverse(a1), n = len(a1), [ SI,DI ]
     MOV SI,0
     MOV CX,n
 
@@ -45,7 +45,7 @@ snippet "rev_arr"
 	ENDM
 
 snippet "swap_var"
-	SWAP_VAR MACRO i,j; [ BL,BH ]
+	__SWAP_VAR MACRO i,j; [ BL,BH ]
     MOV BL,i
     MOV BH,j
     XCHG BL,BH
@@ -54,7 +54,7 @@ snippet "swap_var"
 	ENDM
 
 snippet "check_even"
-	CHECK_EVEN MACRO num,even; set even = (num%2), [AL,AH,BL,even]
+	__CHECK_EVEN MACRO num,even; set even = (num%2), [AL,AH,BL,even]
     XOR AX,AX
     MOV even,0
     MOV AL,num
@@ -67,7 +67,7 @@ snippet "check_even"
 	ENDM
 
 snippet "input_array"
-	INPUT_ARR MACRO a,n; a[n] = input(), [AL,AH,CL,DX,SI]
+	__INPUT_ARR MACRO a,n; a[n] = input(), [AL,AH,CL,DX,SI]
     MOV SI,0
     MOV CL,n
 
@@ -82,7 +82,7 @@ snippet "input_array"
 	ENDM
 
 snippet "build_freq_array"
-	BUILD_FREQ MACRO arr,freq,n; freq[arr[i]]++
+	__BUILD_FREQ MACRO arr,freq,n; freq[arr[i]]++
     MOV SI,0
     MOV CL,n
     RESET_FREQ:
@@ -103,7 +103,7 @@ snippet "build_freq_array"
 	ENDM
 
 snippet "array_from_freq"
-	ARR_FROM_FREQ MACRO arr,freq,n; build arr from freq[n] array
+	__ARR_FROM_FREQ MACRO arr,freq,n; build arr from freq[n] array
     MOV SI,0
     MOV DI,0
     MOV CL,n
@@ -127,5 +127,27 @@ snippet "array_from_freq"
         LOOP AFREQ_ITER_FREQ
 
     AFREQ_DONE:
+	ENDM
+
+snippet "gcd"
+	__GCD MACRO a,b,gcd; gcd=gcd(a,b), [AX,BL,CL]
+    MOV BL,a; BL = a
+    MOV CL,b; CL = b
+
+    GCD_ITER:
+        CMP CL,0
+        JE GCD_DONE; break if b = 0
+
+        XOR AX,AX
+        MOV AL, BL; AL = a
+        DIV CL; AH = a%b
+
+        MOV BL, CL; a = b
+        MOV CL, AH; b = a%b
+
+        JMP GCD_ITER
+
+    GCD_DONE:
+        MOV gcd,BL
 	ENDM
 
