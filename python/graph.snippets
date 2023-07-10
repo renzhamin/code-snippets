@@ -1,0 +1,47 @@
+snippet ds_DSU
+	class DSU:
+		def __init__(self, n) -> None:
+			self.par = [i for i in range(n)]
+			self.ln = [1] * n
+
+		def root(self, x):
+			if self.par[x] != x:
+				self.par[x] = self.root(self.par[x])
+			return self.par[x]
+
+		def merge(self, x, y):
+			a, b = self.root(x), self.root(y)
+			if a == b:
+				return
+
+			if self.ln[b] > self.ln[a]:
+				a, b = b, a
+
+			self.ln[a] += self.ln[b]
+			self.par[b] = a
+
+
+snippet algo_DJIKSTRA
+	from queue import PriorityQueue
+
+	def djikstra(n, g, source, destination):
+		dist = [10**10] * n
+		Q = PriorityQueue()
+		Q.put((0, source))
+		dist[source] = 0
+		vis = [0] * n
+
+		while not Q.empty():
+			w, u = Q.get()
+			if vis[u]:
+				continue
+			vis[u] = 1
+			for v,W,_ in g[u]:
+				if vis[v]:
+					continue
+				tmp = w + W
+				if tmp < dist[v]:
+					dist[v] = tmp
+					Q.put((tmp, v))
+
+		return dist[destination]
